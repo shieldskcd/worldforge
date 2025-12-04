@@ -1,181 +1,137 @@
-# World Forge 🔨⚡
+# ⚒️ World Forge
 
-A natural language world builder and destruction sandbox. Describe what you want, watch it form, then blow it up.
+A natural language world builder. Describe any location and watch it come to life with rich descriptions, NPCs, props, and atmosphere.
 
 ## Quick Start
 
-1. **Download Godot 4.2+** from [godotengine.org](https://godotengine.org/download)
-2. Open Godot and click "Import"
-3. Navigate to this folder and select `project.godot`
-4. Press F5 or click the Play button
+```bash
+# 1. Install dependencies
+pip install -r requirements.txt
 
-## How It Works
-
-### The Forge Terminal
-
-Type natural language descriptions and the World Forge interprets them:
-
-```
-Create a throne room with a jester who tells bad dad jokes
+# 2. Run the app
+streamlit run app.py
 ```
 
-```
-Build a dark dungeon with explosive barrels, held together by hope
-```
+Then open http://localhost:8501 in your browser.
 
-```
-Make a tavern with three drunk goblins and lots of tables
-```
+## Features
 
-```
-Convergence Zero cityscape with neon lights and robots
-```
+### Natural Language Input
+Just describe what you want:
+- "A throne room with a jester who tells dad jokes"
+- "Dark dungeon held together by hope with explosive barrels"
+- "Cozy tavern with a grumpy bartender and three goblins"
+- "Convergence Zero control room with malfunctioning robots"
 
-### What the Parser Understands
+### Smart Parsing
+The generator understands:
 
-**Room Types:**
-- throne room, dungeon, cave, tavern, laboratory
-- space station, cyberpunk city, temple, library
-- convergence zero (for your game!)
-- void/abstract/chaos
+**Room Types:** throne room, dungeon, cave, tavern, library, laboratory, temple, forest, city, alley, cyberpunk, space station, convergence zero, void
 
-**Sizes:**
-- tiny, small, medium, large, vast, sprawling
+**Sizes:** tiny, small, medium, large, vast, sprawling
 
 **Stability:**
-- solid, normal, fragile
-- "held together by hope" (everything collapses if you look at it wrong)
+- solid (built to last)
+- normal 
+- fragile (crumbling)
+- "held together by hope" (one bump and it all collapses)
 
-**Props:**
-- throne, chair, table, barrel, crate, chest
-- pillar, torch, candle, bookshelf, statue, banner
-- robot, computer, terminal
-- explosive barrel, bomb, TNT
+**Moods:** dark, cheerful, spooky, mysterious, peaceful, cozy, ancient, ruined, elegant, gritty
 
-**NPCs:**
-- jester, king, queen, guard, wizard, merchant
-- goblin, skeleton, zombie, dragon
-- robot, cat, dog
-- potato person (yes, really)
+**NPCs:** jester, guard, wizard, bartender, merchant, goblin, skeleton, robot, king, queen, dragon, cat, dog, potato person
 
-**Behaviors:**
-- tells jokes, dad jokes, wandering, guarding
-- hostile, friendly, patrolling
+**Behaviors:** Add "tells jokes" or "dad jokes" for joke-telling NPCs
 
-## Controls
+### Output
+Each generated world includes:
+- 📝 Name and description
+- 🌫️ Detailed atmosphere
+- 👥 NPCs with dialogue
+- 🪑 Props and objects
+- 🎭 Mood tags
+- 🚪 Exits to other areas
+- 📤 JSON export
 
-| Key | Action |
-|-----|--------|
-| Arrow Keys | Move |
-| TAB | Toggle terminal |
-| Q | SMITE (explode everything) |
-| SPACE | Throw object |
-| E | Interact with NPCs |
+## LLM Enhancement (Optional)
 
-## Terminal Commands
+Add your Anthropic API key in the sidebar for richer, more creative generation powered by Claude. Without an API key, the app uses smart template-based generation.
 
-- `help` - Show help
-- `clear` - Destroy current world
-- `smite` - Activate smite
-- `chaos` - Break all structural joints
-
-## Project Structure
+## File Structure
 
 ```
-WorldForge/
-├── project.godot          # Godot project file
-├── core/
-│   ├── game_manager.gd    # Global state coordination
-│   ├── world_parser.gd    # Natural language interpretation
-│   ├── object_factory.gd  # Creates objects with physics
-│   ├── destructible_object.gd
-│   ├── npc_controller.gd
-│   └── player.gd
-├── scenes/
-│   ├── main.tscn          # Main game scene
-│   └── main.gd
-├── ui/
-│   ├── forge_terminal.tscn
-│   └── forge_terminal.gd
-└── icon.svg
+world_forge/
+├── app.py              # Streamlit web interface
+├── world_generator.py  # Generation logic
+├── templates.py        # Room/NPC/prop templates
+├── requirements.txt    # Dependencies
+└── README.md
 ```
 
-## Adding New Content
+## Extending
 
-### New Room Types
+### Add New Room Types
 
-Edit `world_parser.gd` - add to `ROOM_TYPES` dictionary:
-```gdscript
-"my_room": "my_room_type",
-```
-
-Then add a palette in `object_factory.gd`:
-```gdscript
-"my_room_type": {
-    "floor": Color(0.4, 0.4, 0.4),
-    "wall": Color(0.5, 0.5, 0.5),
-    "accent": Color(0.8, 0.2, 0.2),
+In `templates.py`, add to `ROOM_TEMPLATES`:
+```python
+'my_room': {
+    'description': "A {mood} description here...",
+    'lighting': "How it's lit",
+    'default_props': ['prop1', 'prop2'],
 },
 ```
 
-### New Props
-
-Add to `PROP_KEYWORDS` in `world_parser.gd`:
-```gdscript
-"my_prop": {"type": "furniture", "subtype": "my_prop"},
+Then add detection keyword in `world_generator.py`:
+```python
+'my keyword': 'my_room',
 ```
 
-Add size in `object_factory.gd` `_get_object_size()`:
-```gdscript
-"my_prop": return Vector2(50, 50)
+### Add New NPCs
+
+In `templates.py`, add to `NPC_TEMPLATES`:
+```python
+'my_npc': {
+    'description': "What they look like",
+    'behavior': "What they do",
+},
 ```
 
-Add color in `OBJECT_COLORS`:
-```gdscript
-"my_prop": Color(0.5, 0.5, 0.5),
+Add dialogue in `DIALOGUE_TEMPLATES`:
+```python
+'my_npc': [
+    "Line one",
+    "Line two",
+],
 ```
 
-### New NPCs
+### Add New Props
 
-Add to `npc_patterns` in `world_parser.gd`:
-```gdscript
-{"pattern": "my_npc", "type": "my_npc", "default_behavior": "idle"},
+In `templates.py`, add to `PROP_TEMPLATES`:
+```python
+'my_prop': {
+    'name': 'Display Name',
+    'type': 'category',
+    'description': 'What it is',
+},
 ```
-
-Add color in `object_factory.gd`:
-```gdscript
-"my_npc": Color(0.5, 0.5, 0.5),
-```
-
-## Asset Recommendations
-
-Replace the placeholder ColorRects with real sprites:
-
-- **Kenney.nl** - Free, consistent, huge variety
-- **OpenGameArt.org** - Mixed quality but lots of options  
-- **itch.io** - Search "free asset pack 2D"
-- **Novel AI / Stable Diffusion** - For custom pieces
 
 ## Future Ideas
 
-- [ ] Save/load worlds
-- [ ] More destruction types (fire, acid, etc.)
-- [ ] Sound effects for explosions
-- [ ] Particle effects
-- [ ] More NPC behaviors
-- [ ] Procedural room layouts
-- [ ] LLM integration for smarter parsing
-- [ ] Multiple connected rooms
-- [ ] Day/night cycles per biome
+- [ ] Save/load world collections
+- [ ] Connect rooms into dungeons/maps
+- [ ] Export to other formats (Markdown, HTML)
+- [ ] Integration with game engines
+- [ ] Collaborative world building
+- [ ] AI image generation for locations
+- [ ] Text-to-speech for NPC dialogue
 
-## Notes
+## Use Cases
 
-This is a creative sandbox for visualization and stress relief. Build something, blow it up, repeat. Perfect for:
-
-- Visualizing game ideas (Convergence Zero scenes!)
-- Testing tabletop RPG room layouts
-- Just destroying things after a long day
+- **Game Development:** Quickly visualize locations for Convergence Zero or other projects
+- **Tabletop RPG:** Generate rooms on the fly during sessions
+- **Writing:** Create detailed settings for stories
+- **Brainstorming:** Rapid location prototyping
+- **Fun:** Just make weird stuff and see what happens
 
 ---
 
-Built with Godot 4 and the power of natural language chaos.
+Built with Streamlit and optional Claude API integration.
